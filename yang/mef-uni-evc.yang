@@ -10,16 +10,6 @@ module mef-uni-evc {
     prefix mef-cos;
   }
 
-  organization 
-    "Web URL: http://metroethernetforum.org/
-      E-mail: mibs@metroethernetforum.org
-      Postal: Metro Ethernet Forum
-      6033 W. Century Boulevard, Suite 1107
-      Los Angeles, CA 90045
-      U.S.A.
-      Phone: +1 310-642-2800
-      Fax: +1 310-642-2808";
-
   typedef vlan-id {
     type int32 {
       range "1..4094";
