@@ -2,12 +2,8 @@ module mef-uni-evc {
   namespace "http://tail-f.com/mef-uni-evc";    
   prefix mef-uni-evc;
 
-  import mef-itu-types {
-    prefix mef-itu-t;
-  }
-
-  import mef-cos {
-    prefix mef-cos;
+  import mef-profiles {
+    prefix mef-profiles;
   }
 
   typedef vlan-id {
@@ -50,6 +46,19 @@ module mef-uni-evc {
     reference
       "MEF 10.3 Ethernet Service Attributes Phase 3, October 2013";
   }
+    typedef entity-admin-state-type {
+        type enumeration {
+            enum unknown;
+            enum locked;
+            enum shutting-down;
+            enum unlocked;
+        }
+        description 
+         "Represents the various possible administrative states.
+          A value of 'locked' means the resource is administratively prohibited from use.  A value of 'shuttingDown' means that usage is administratively limited to current instances of use.  A value of 'unlocked' means the resource is not administratively prohibited from use.  A value of 'unknown' means that this resource is unable to report administrative state.";
+        reference "ENTITY-STATE-TC-MIB";
+    }
+
 
   container mef-service-interfaces {
 
@@ -76,7 +85,7 @@ module mef-uni-evc {
 
       leaf identifier {
         type string;
-        default '\';
+        default \;
       }
 
       leaf frame-format {
@@ -92,19 +101,19 @@ module mef-uni-evc {
 
       leaf-list ingress-bwp-group {
         type leafref {
-          path "/mef-cos:performance-profile/mef-cos:id";
+          path "/mef-profiles:bandwidth-profile:identifier";
         }
       }
 
       leaf-list engress-bwp-group {
         type leafref {
-          path "/mef-cos:performance-profile/mef-cos:id";
+          path "/mef-profiles:bandwidth-profile:identifier";
         }
       }
 
       leaf-list l2cp-group {
         type leafref {
-          path "/mef-cos:performance-profile/mef-cos:id";
+          path "/mef-profiles:l2cp-profile:index";
         }
       }
     }
@@ -122,7 +131,7 @@ module mef-uni-evc {
 
       leaf identifier {
         type string;
-        default "#";
+        default #;
         status current;
       }
 
@@ -190,14 +199,14 @@ module mef-uni-evc {
 
       leaf-list ingress-bwp-group {
         type leafref {
-          path "/mef-cos:performance-profile/mef-cos:id";
+          path "/mef-profiles:bandwidth-profile:identifier";
         }
         status current;
       }
 
       leaf-list engress-bwp-group {
         type leafref {
-          path "/mef-cos:performance-profile/mef-cos:id";
+          path "/mef-profiles:bandwidth-profile:identifier";
         }
       }        
     }
@@ -275,25 +284,25 @@ module mef-uni-evc {
 
       leaf-list ingress-bwp-group {
 	type leafref {
-	  path "/mef-cos:performance-profile/mef-cos:id";
+	  path "/mef-profiles:bandwidth-profile:identifier";
 	}
       }
 
       leaf-list egress-bwp-group {
         type leafref {
-          path "/mef-cos:performance-profile/mef-cos:id";
+          path "/mef-profiles:bandwidth-profile:identifier";
         }
       }
       leaf-list l2cp-group {
         type leafref {
-          path "/mef-cos:performance-profile/mef-cos:id";
+          path "/mef-profiles:l2cp-profile:index";
         }
       }
 
       // MUST max 1 if point-to-point
 
       leaf admin-state {
-	type mef-itu-t:admin-state-t;
+	type entity-admin-state-type;
         default unlocked;
         status current;
 	description
