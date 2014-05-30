@@ -1,0 +1,337 @@
+module mef-uni-evc {
+  namespace "http://tail-f.com/mef-uni-evc";    
+  prefix mef-uni-evc;
+
+  import mef-itu-types {
+    prefix mef-itu-t;
+  }
+
+  import mef-cos {
+    prefix mef-cos;
+  }
+
+  organization 
+    "Web URL: http://metroethernetforum.org/
+      E-mail: mibs@metroethernetforum.org
+      Postal: Metro Ethernet Forum
+      6033 W. Century Boulevard, Suite 1107
+      Los Angeles, CA 90045
+      U.S.A.
+      Phone: +1 310-642-2800
+      Fax: +1 310-642-2808";
+
+  typedef vlan-id {
+    type int32 {
+      range "1..4094";
+    }
+    description 
+      "The VLAN-ID that uniquely identifies a VLAN.  This is the
+       12-bit  VLAN-ID used in the VLAN Tag header. The range is
+       defined by the REFERENCED specification.";
+    reference 
+      "IEEE Std 802.1Q 2003 Edition, Virtual Bridged Local
+       Area Networks.";
+  }
+
+  typedef ieee-8021-priority {
+    type uint8 {
+      range "0..7";
+    }
+    description "An 802.1Q user priority value.";
+    reference "IEEE 802.1Q";
+  }
+
+  typedef service-frame-delivery-type {
+    type enumeration {
+      enum discard;
+      enum unconditional;
+      enum conditional;
+    }
+    description 
+      "A MEF service frame can have one of three different delivery
+       types:
+       - Discard: Service Frames are discarded
+       - Unconditional: Service Frames are unconditionally delivered
+         no matter the content of the Service Frame. An example of
+         this is a Point-to-Point EVC.
+       - Conditional: Service Frame are conditionally delivered to the
+         destination UNI. The condition is specified, for example via
+         a bandwidth profile or unicast MAC address learning.";
+    reference
+      "MEF 10.3 Ethernet Service Attributes Phase 3, October 2013";
+  }
+
+  container mef-service-interfaces {
+
+    list list {
+      key index;
+
+      leaf index {
+        type uint32;
+        status current;
+      }
+
+      leaf type {
+        type bits {
+          bit uni-type-1-dot-1;
+          bit uni-type-1-dot-2;
+          bit uni-type-2-dot-1;
+          bit uni-type-2-dot-2;
+          bit enni;
+          bit vuni-on-enni;
+        }
+        default uni-type-1-dot-1;
+        status current;
+      }
+
+      leaf identifier {
+        type string;
+        default '\';
+      }
+
+      leaf frame-format {
+        type enumeration {
+          enum no-tag;
+          enum c-tag;
+          enum s-tag;
+          enum s-tag-c-tag;
+        }
+        default no-tag;
+        status current;
+      }
+
+      leaf-list ingress-bwp-group {
+        type leafref {
+          path "/mef-cos:performance-profile/mef-cos:id";
+        }
+      }
+
+      leaf-list engress-bwp-group {
+        type leafref {
+          path "/mef-cos:performance-profile/mef-cos:id";
+        }
+      }
+
+      leaf-list l2cp-group {
+        type leafref {
+          path "/mef-cos:performance-profile/mef-cos:id";
+        }
+      }
+    }
+  }
+
+  container mef-service-uni {
+
+    list uni {
+      key index;
+
+      leaf index {
+        type uint32;
+        status current;
+      }
+
+      leaf identifier {
+        type string;
+        default "#";
+        status current;
+      }
+
+      leaf bundling-multiplex {
+        type enumeration {
+          enum all-to-one;
+          enum bundling;
+          enum multiplex;
+          enum bundling-multiplex;
+        }
+        default all-to-one;
+        status current;
+      }
+
+      leaf ce-vlan-id-untagged {
+        type vlan-id;
+        default 1;
+        status current;
+      }
+
+      leaf ce-vlan-id-priority-untagged {
+        type ieee-8021-priority;
+        default 0;
+        status current;
+      }
+    }
+
+    list evc-per-uni {
+      key index;
+
+      leaf index {
+        type uint32;
+        status current;
+      }
+
+      leaf service-type {
+        type enumeration {
+          enum epl;
+          enum evpl;
+          enum eplan;
+          enum evplan;
+          enum eptree;
+          enum evptree;
+        }
+        default epl;
+        config false;
+        status current;
+      }
+
+      leaf identifier {
+        type string {
+          length "0..90";
+        }
+        config false;
+        status current;
+      }
+
+      leaf ce-vlan-map {
+        type string {
+          length "0..255";
+        }
+        default 1:4095;
+        status current;
+      }
+
+      leaf-list ingress-bwp-group {
+        type leafref {
+          path "/mef-cos:performance-profile/mef-cos:id";
+        }
+        status current;
+      }
+
+      leaf-list engress-bwp-group {
+        type leafref {
+          path "/mef-cos:performance-profile/mef-cos:id";
+        }
+      }        
+    }
+  }
+
+  container mef-service-evc {
+
+    list evc {
+      key identifier;
+  
+      leaf identifier {
+	type string{
+          length "0..45";
+        }
+	description
+	  "";
+      }
+
+      leaf service-type {
+	type enumeration {
+	  enum point-to-point;
+	  enum multipoint-to-multipoint;
+          enum rooted-multipoint;
+
+	}
+        default point-to-point;
+        status current;
+	description
+          "";
+      }
+
+      leaf max-service-frame-size {
+        type uint32 {
+          range "1522..16384";
+        }
+        status current;
+      }
+
+      leaf ce-vlan-id-preservation {
+	type enumeration {
+          enum preserve;
+          enum no-preserve;
+        }
+        status current;
+	description
+	  "";
+      }
+
+      leaf ce-vlan-cos-preservation {
+	type enumeration{
+          enum preserve;
+          enum no-preserve;
+        }
+
+        status current;
+	description
+	  "";
+      }
+
+      leaf unicast-delivery {
+        type service-frame-delivery-type;
+        default unconditional;
+        status current;
+      }
+
+      leaf multicast-delivery {
+        type service-frame-delivery-type;
+        default unconditional;
+      }
+
+      leaf broadcast-delivery {
+        type service-frame-delivery-type;
+        default unconditional;
+      }
+
+      leaf-list ingress-bwp-group {
+	type leafref {
+	  path "/mef-cos:performance-profile/mef-cos:id";
+	}
+      }
+
+      leaf-list egress-bwp-group {
+        type leafref {
+          path "/mef-cos:performance-profile/mef-cos:id";
+        }
+      }
+      leaf-list l2cp-group {
+        type leafref {
+          path "/mef-cos:performance-profile/mef-cos:id";
+        }
+      }
+
+      // MUST max 1 if point-to-point
+
+      leaf admin-state {
+	type mef-itu-t:admin-state-t;
+        default unlocked;
+        status current;
+	description
+	  "";
+      }
+    }
+
+    list evc-uni {
+      key "evc-identifier index";
+      leaf evc-identifier {
+        type string;
+        status current;
+      }
+
+      leaf index {
+        type uint32;
+        status current;
+      }
+
+      leaf type {
+        type enumeration {
+          enum root;
+          enum leaf;
+          enum unknown;
+        }
+        default root;
+        status current;
+      }
+    }
+  }
+}
