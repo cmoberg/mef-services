@@ -53,12 +53,11 @@ module mef-uni-evc {
 
   container mef-service-interfaces {
 
-    list list {
+    list interface {
       key index;
 
       leaf index {
         type uint32;
-        status current;
       }
 
       leaf type {
@@ -71,7 +70,6 @@ module mef-uni-evc {
           bit vuni-on-enni;
         }
         default uni-type-1-dot-1;
-        status current;
       }
 
       leaf identifier {
@@ -87,7 +85,6 @@ module mef-uni-evc {
           enum s-tag-c-tag;
         }
         default no-tag;
-        status current;
       }
 
       leaf-list ingress-bwp-group {
@@ -117,13 +114,11 @@ module mef-uni-evc {
 
       leaf index {
         type uint32;
-        status current;
       }
 
       leaf identifier {
         type string;
         default "#";
-        status current;
       }
 
       leaf bundling-multiplex {
@@ -134,19 +129,16 @@ module mef-uni-evc {
           enum bundling-multiplex;
         }
         default all-to-one;
-        status current;
       }
 
       leaf ce-vlan-id-untagged {
         type vlan-id;
         default 1;
-        status current;
       }
 
       leaf ce-vlan-id-priority-untagged {
         type ieee-8021-priority;
         default 0;
-        status current;
       }
     }
 
@@ -155,7 +147,6 @@ module mef-uni-evc {
 
       leaf index {
         type uint32;
-        status current;
       }
 
       leaf service-type {
@@ -169,7 +160,6 @@ module mef-uni-evc {
         }
         default epl;
         config false;
-        status current;
       }
 
       leaf identifier {
@@ -177,7 +167,6 @@ module mef-uni-evc {
           length "0..90";
         }
         config false;
-        status current;
       }
 
       leaf ce-vlan-map {
@@ -185,14 +174,12 @@ module mef-uni-evc {
           length "0..255";
         }
         default 1:4095;
-        status current;
       }
 
       leaf-list ingress-bwp-group {
         type leafref {
           path "/mef-cos:performance-profile/mef-cos:id";
         }
-        status current;
       }
 
       leaf-list engress-bwp-group {
@@ -224,7 +211,6 @@ module mef-uni-evc {
 
 	}
         default point-to-point;
-        status current;
 	description
           "";
       }
@@ -233,7 +219,6 @@ module mef-uni-evc {
         type uint32 {
           range "1522..16384";
         }
-        status current;
       }
 
       leaf ce-vlan-id-preservation {
@@ -241,7 +226,6 @@ module mef-uni-evc {
           enum preserve;
           enum no-preserve;
         }
-        status current;
 	description
 	  "";
       }
@@ -251,8 +235,6 @@ module mef-uni-evc {
           enum preserve;
           enum no-preserve;
         }
-
-        status current;
 	description
 	  "";
       }
@@ -260,7 +242,6 @@ module mef-uni-evc {
       leaf unicast-delivery {
         type service-frame-delivery-type;
         default unconditional;
-        status current;
       }
 
       leaf multicast-delivery {
@@ -295,7 +276,6 @@ module mef-uni-evc {
       leaf admin-state {
 	type mef-itu-t:admin-state-t;
         default unlocked;
-        status current;
 	description
 	  "";
       }
@@ -305,12 +285,10 @@ module mef-uni-evc {
       key "evc-identifier index";
       leaf evc-identifier {
         type string;
-        status current;
       }
 
       leaf index {
         type uint32;
-        status current;
       }
 
       leaf type {
@@ -320,7 +298,6 @@ module mef-uni-evc {
           enum unknown;
         }
         default root;
-        status current;
       }
     }
   }

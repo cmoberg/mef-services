@@ -1,0 +1,185 @@
+module mef-profiles {
+  namespace "http://tail-f.com/mef-profiles";
+  prefix mef-profiles;
+
+  import ietf-yang-types {
+    prefix yang;
+    revision-date 2013-07-15;
+  }
+  
+  list cos-profile {
+    key identifier;
+    
+    leaf identifier {
+      type string;
+
+      description
+        "";
+    }
+
+    leaf type {
+      type enumeration{
+        enum interface;
+        enum evc;
+        enum pcp;
+        enum dscp;
+        enum l2cp;
+      }
+      
+      default pcp;
+      description
+        "";
+    }
+
+    leaf identifier-list {
+      type string {
+        length "0..255";
+      }
+      default "0:7";
+      description
+        "";
+    }
+
+    leaf mac-address {
+      type yang:mac-address;
+      default "00:00:00:00:00:00";
+      description
+        "";
+    }
+
+    leaf l2cp-protocol {
+      type uint32;
+      default 0;
+    }
+
+    leaf l2cp-subtype {
+      type uint32;
+      default 0;
+    }
+  }
+
+  list l2cp-profile {
+    key index;
+
+    leaf index {
+      type uint32;
+      description
+        "";
+    }
+
+    leaf type {
+      type enumeration {
+        enum discard;
+        enum tunnel;
+        enum peer;
+        enum pass-to-evc;
+      }
+      default tunnel;
+    }
+
+    leaf match-scope {
+      type enumeration {
+        enum dst-addr-only;
+        enum dst-addr-plus-protocol;
+        enum dst-addr-plus-protocol-plus-subtype;
+      }
+      default dst-addr-only;
+    }
+
+    leaf mac-address {
+      type yang:mac-address;
+      default "01:80:C2:00:00:00";
+    }
+
+    leaf protocol {
+      type uint32;
+      default 0;
+    }
+
+    leaf subtype {
+      type uint32;
+      default 0;
+    }
+  }
+
+  list bandwidth-profile {
+    key identifier;
+
+    //XXX: Descriptions TBD
+
+    leaf identifier {
+      type string;
+      description
+        "";
+    }
+
+    leaf cir {
+      type uint32{
+        range "0..10000000";
+      }
+      units Kbps;
+      default 1000000;
+      description
+        "";
+    }
+
+    leaf cbs {
+      type uint32{
+        range "0..10000000";
+      }
+      units bytes;
+      default 12;
+      description
+        "";
+    }
+
+    leaf eir {
+      type uint32{
+        range "0..10000000";
+      }
+      units Kbps;
+      default 0;
+      description
+        "";
+    }
+    
+    leaf ebs {
+      type uint32{
+        range "0..10000000";
+      }
+      
+      units bytes;
+      default 0;
+      description
+        "";
+    }
+
+    leaf color-mode {
+      type enumeration{
+        enum color-blind;
+        enum color-aware;
+      }
+      default color-blind;
+      description
+        "";
+    }
+
+    leaf coupling-flag {
+      type enumeration {
+        enum yellow-eir-only;
+        enum yellow-eir-plus-cir;
+      }
+      default yellow-eir-only;
+    }
+
+    leaf performance-data-set-enabled {
+      type binary;
+    }
+
+    leaf cos-profile-ref {
+      type leafref {
+        path "/cos-profile/identifier";
+      }
+    }
+  }
+}
