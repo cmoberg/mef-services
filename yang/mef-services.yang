@@ -1,0 +1,111 @@
+module mef-services {
+  namespace "http://tail-f.com/mef";    
+  prefix mef-svc;
+
+  import tailf-ncs {
+    prefix ncs;
+  }
+
+  import itu-t-q8401-q3 {
+    prefix q8401;
+  }
+
+  list evc {
+    key "evc-name";
+    
+    leaf evc-name {
+      description
+        "The ethEVCName is a string that is a unique identifying value for the
+         ETH Virtual Connection.";
+      type string;
+    }
+    
+    leaf user-label {
+      type string;
+      description
+        "A text string that may be used to provide additional information about
+         the EVC, such as a circuit identifier.";
+    }
+
+    leaf evc-type {
+      type enumeration {
+        enum "multipoint-to-multipoint";
+        enum "point-to-point";
+        enum "rooted-multipoint";
+      }
+    }
+    
+    leaf a-end {
+      type leafref {
+        path "/ncs:ncs/ncs:managed-device/ncs:name";
+      }
+    }
+    
+    leaf-list z-end {
+      type leafref {
+        path "/ncs:ncs/ncs:managed-device/ncs:name";
+      }
+    }
+    
+    leaf admin-state {
+      type boolean; // FIXME
+      description
+        "This attribute denotes the administrative state of the
+         ETH_FDFr_EVC. This is a read/write attribute. The values
+         supported are Locked or Unlocked.  In the Locked state frame
+         flow through the ETH_FDFr_EVC is prohibited. (GET, REPLACE)";
+    }
+    
+    leaf oper-state {
+      type boolean; // FIXME
+      config false;
+      description
+        "This attribute denotes the operational state of the ETH_FDFr_EVC as
+           working 'Enabled' or not-working 'Disabled'";
+    }    
+
+    leaf availability-status {
+      type enumeration {
+        enum in-test;
+        enum failed;
+        enum power-off;
+        enum degraded;
+        enum not-installed;
+      }
+      config false;
+      description
+        "The availability status attribute is read only and indicates that
+           ETH_FDFr_EVC is functioning properly. May be mapped to
+           IETF’s rfc 2863, The Interfaces Group MIB IfOperstatus.";
+    }    
+      
+    leaf evc-protected {
+      description
+        "This attribute indicates if the ETH_FDFr_EVC is protected or
+           not at the ETH layer.";
+        
+      type boolean;
+    }
+      
+    leaf uni-evc-vlan-id-preservation {
+      type boolean;
+      description
+        "This Boolean attribute identifies an EVC where the CE VLAN IDs of
+           egress frames are always identical to the CE VLAN IDs of
+           the corresponding ingress frames.  An EVC with more than
+           one CE-VLAN ID mapping to it MUST have the CE-VLAN ID
+           Preservation Service Attribute and the list of CE-VLAN IDs
+           mapped to the EVC MUST be the same at each UNI in the
+           EVC. (GET, REPLACE)";
+    }
+
+    leaf uni-evc-vlan-cos-preservation {
+      type boolean;
+      description
+        "This Boolean attribute identifies an EVC where the CE VLAN COS
+           user_priority bits of an egress frame is always identical
+           to the CE VLAN COS user_priority bits of the corresponding
+           ingress frame. (GET, REPLACE)";
+    }
+  }
+}
