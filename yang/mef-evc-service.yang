@@ -1,0 +1,219 @@
+module mef-evc-service {
+  namespace "http://tail-f.com/mef-evc-service";    
+  prefix mef-evc-service;
+
+  import mef-profiles {
+    prefix mef-profiles;
+  }
+    description "This module models a MEF EVC service based on MEF 10.3.";
+
+
+  typedef vlan-id {
+    type int32 {
+      range "1..4094";
+    }
+    description 
+      "The VLAN-ID that uniquely identifies a VLAN.  This is the
+       12-bit  VLAN-ID used in the VLAN Tag header. The range is
+       defined by the REFERENCED specification.";
+    reference 
+      "IEEE Std 802.1Q 2003 Edition, Virtual Bridged Local
+       Area Networks.";
+  }
+
+  typedef ieee-8021-priority {
+    type uint8 {
+      range "0..7";
+    }
+    description "An 802.1Q user priority value.";
+    reference "IEEE 802.1Q";
+  }
+
+  typedef service-frame-delivery-type {
+    type enumeration {
+      enum discard;
+      enum unconditional;
+      enum conditional;
+    }
+    description 
+      "A MEF service frame can have one of three different delivery
+       types:
+       - Discard: Service Frames are discarded
+       - Unconditional: Service Frames are unconditionally delivered
+         no matter the content of the Service Frame. An example of
+         this is a Point-to-Point EVC.
+       - Conditional: Service Frame are conditionally delivered to the
+         destination UNI. The condition is specified, for example via
+         a bandwidth profile or unicast MAC address learning.";
+    reference
+      "MEF 10.3 Ethernet Service Attributes Phase 3, October 2013";
+  }
+    typedef entity-admin-state-type {
+        type enumeration {
+            enum unknown;
+            enum locked;
+            enum shutting-down;
+            enum unlocked;
+        }
+        description 
+         "Represents the various possible administrative states.
+          A value of 'locked' means the resource is administratively prohibited from use.  A value of 'shuttingDown' means that usage is administratively limited to current instances of use.  A value of 'unlocked' means the resource is not administratively prohibited from use.  A value of 'unknown' means that this resource is unable to report administrative state.";
+        reference "ENTITY-STATE-TC-MIB";
+    }
+
+  container mef-service {
+
+      leaf service-type {
+        type enumeration {
+          enum epl;
+          enum evpl;
+          enum eplan;
+          enum evplan;
+          enum eptree;
+          enum evptree;
+        }
+        default epl;
+        config false;
+        status current;
+      }
+  }
+
+  container mef-service-evc {
+
+    list eth-fdfr-evc {
+      key identifier;
+  
+      leaf identifier {
+	type string{
+          length "0..45";
+        }
+	description
+	  "";
+      }
+            leaf label {
+                type string;
+            }
+            leaf user-label {
+                type string;
+            }
+
+
+      leaf type {
+	type enumeration {
+	  enum point-to-point;
+	  enum multipoint-to-multipoint;
+          enum rooted-multipoint;
+
+	}
+        default point-to-point;
+        status current;
+	description
+          "";
+      }
+
+      leaf max-service-frame-size {
+        type uint32 {
+          range "1522..16384";
+        }
+        status current;
+      }
+
+      leaf ce-vlan-id-preservation {
+	type enumeration {
+          enum preserve;
+          enum no-preserve;
+        }
+        status current;
+	description
+	  "";
+      }
+
+      leaf ce-vlan-cos-preservation {
+	type enumeration{
+          enum preserve;
+          enum no-preserve;
+        }
+
+        status current;
+	description
+	  "";
+      }
+
+      leaf unicast-delivery {
+        type service-frame-delivery-type;
+        default unconditional;
+        status current;
+      }
+
+      leaf multicast-delivery {
+        type service-frame-delivery-type;
+        default unconditional;
+      }
+
+      leaf broadcast-delivery {
+        type service-frame-delivery-type;
+        default unconditional;
+      }
+
+      leaf-list ingress-bwp-group {
+	type leafref {
+                    path "/mef-profiles:bandwidth-profile/mef-profiles:identifier";
+
+	}
+      }
+
+      leaf-list egress-bwp-group {
+        type leafref {
+                    path "/mef-profiles:bandwidth-profile/mef-profiles:identifier";
+
+        }
+      }
+      leaf-list l2cp-group {
+        type leafref {
+                    path "/mef-profiles:l2cp-profile/mef-profiles:index";
+
+        }
+      }
+
+      // MUST max 1 if point-to-point
+
+      leaf admin-state {
+	type entity-admin-state-type;
+        default unlocked;
+        status current;
+	description
+	  "";
+      }
+            leaf eth-flow-point-list-ref {
+                type leafref {
+                    path "/mef-service-evc/eth-flow-point/identifier";
+                }
+            }
+            leaf max-uni-end-points {
+                type uint32;
+            }
+            leaf protected {
+                type boolean;
+            }
+
+    }
+
+    list eth-flow-point {
+      key identifier;
+      leaf identifier {
+        type string;
+        status current;
+      }
+
+      leaf type {
+        type enumeration {
+          enum root;
+          enum leaf;
+          enum unknown;
+        }
+        default root;
+        status current;
+      }
+    }
+  }
+}
