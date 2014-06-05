@@ -51,6 +51,15 @@ module mef-uni-evc {
       "MEF 10.3 Ethernet Service Attributes Phase 3, October 2013";
   }
 
+  feature ietf-interface-model {
+    description
+      "This feature indicates that the device implements the
+       ietf-interfaces module";
+
+    reference
+      "IETF RFC 7223 - A YANG Data Model for Interface Management";
+  }
+
   container mef-service-interfaces {
 
     list interface {
@@ -74,7 +83,15 @@ module mef-uni-evc {
 
       leaf identifier {
         type string;
-        default '\';
+        default "";
+      }
+
+      leaf ietf-interface-identifier {
+        if-feature ietf-interface-model;
+        type string;
+        description
+          "The name value of a corrsponding entry in the
+           /interfaces/interface list in the IETF interface model";
       }
 
       leaf frame-format {
