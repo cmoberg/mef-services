@@ -11,11 +11,20 @@ module mef-profiles {
     key identifier;
     
     leaf identifier {
-      type string;
+      type uint32;
 
       description
-        "";
+        "This attribute identifies the identifier of a class of service (CoS) instance.";
     }
+        leaf name {
+            type string;
+            description "This attribute identifies the name of a class of service (CoS) instance.";
+        }
+        leaf label {
+            type string;
+            description "This attribute identifies the label of a class of service (CoS) instance.";
+        }
+
 
     leaf type {
       type enumeration{
@@ -28,40 +37,53 @@ module mef-profiles {
       
       default pcp;
       description
-        "";
+        "This attribute identifies the type of a class of service (CoS) instance.";
     }
+        leaf color-id {
+            type enumeration {
+                enum green;
+                enum yellow;
+                enum red;
+            }
+            description "This attribute identifies the color identifier of a class of service (CoS) instance.  TBD: Would this be a configurable attribute?";
+        }
+
 
     leaf identifier-list {
       type string {
         length "0..255";
       }
-      default "0:7";
+      default 0:7;
       description
-        "";
+        "This is TBD, is this needed?";
     }
 
     leaf mac-address {
       type yang:mac-address;
-      default "00:00:00:00:00:00";
+      default 00:00:00:00:00:00;
       description
-        "";
+        "This is TBD, is this needed?";
     }
 
     leaf l2cp-protocol {
       type uint32;
       default 0;
+            description "This is TBD, is this needed?";
+
     }
 
     leaf l2cp-subtype {
       type uint32;
       default 0;
+            description "This is TBD, is this needed?";
+
     }
   }
 
   list l2cp-profile {
-    key index;
+    key identifier;
 
-    leaf index {
+    leaf identifier {
       type uint32;
       description
         "";
@@ -88,7 +110,7 @@ module mef-profiles {
 
     leaf mac-address {
       type yang:mac-address;
-      default "01:80:C2:00:00:00";
+      default 01:80:C2:00:00:00;
     }
 
     leaf protocol {
@@ -101,6 +123,64 @@ module mef-profiles {
       default 0;
     }
   }
+    list performance-profile {
+        key identifier;
+        leaf identifier {
+            type string;
+            description "This attribute identifies the name of a performance profile instance.";
+        }
+        leaf user-label {
+            type string;
+            description "This is a friendly name for specific performance profile.";
+        }
+        list performance-objectives {
+            key measurement-type;
+            leaf measurement-type {
+                type enumeration {
+                    enum one-way;
+                    enum two-way;
+                }
+                description "This key identifies the performance measurement type as one-way or two-way.";
+            }
+            leaf frame-delay-performance {
+                type uint32;
+                description "This attribute identifies the Frame Delay Performance objective for Service Frames.";
+            }
+            leaf frame-delay-range-performance {
+                type uint32;
+                description "This attribute identifies the Frame Delay Range Performance objective for Service Frames.";
+            }
+            leaf mean-frame-delay-performance {
+                type uint32;
+                description "This attribute identifies the mean Frame Delay Performance objective for Service Frames.";
+            }
+            leaf inter-frame-delay-variation-performance {
+                type uint32;
+                description "This attribute identifies the Inter-Frame Delay Variation Performance objective for Service Frames.";
+            }
+            leaf frame-loss-ratio-performance {
+                type uint32;
+                description "This attribute identifies the Frame Loss Ratio Performance objective for Service Frames.";
+            }
+            leaf availability-performance {
+                type uint32;
+                description "This attribute identifies the Availability Performance objective for Service Frames.";
+            }
+            leaf resiliency-hli-performance {
+                type uint32;
+                description "This attribute identifies the Resiliency Performance objective, expressed as High Loss Intervals, for Service Frames.";
+            }
+            leaf resiliency-chli-performance {
+                type uint32;
+                description "This attribute identifies the Resiliency Performance objective, expressed as Consecutive High Loss Intervals, for Service Frames.";
+            }
+            leaf group-availability-performance {
+                type uint32;
+                description "This attribute identifies the Group Availability Performance objective for Service Frames.";
+            }
+        }
+    }
+
 
   list bandwidth-profile {
     key identifier;
@@ -110,17 +190,21 @@ module mef-profiles {
     leaf identifier {
       type string;
       description
-        "";
+        "This attribute identifies the name of an bandwidth profile instance.";
     }
+        leaf user-label {
+            type string;
+            description "This attribute is a friendly name for the specific Bandwidth Category described within this profile.";
+        }
+
 
     leaf cir {
       type uint32{
         range "0..10000000";
       }
-      units Kbps;
-      default 1000000;
+      units Bps;
       description
-        "";
+        "This attribute identifies the Committed Information Rate (CIR) in bits per second for one direction of an ETH EVC.";
     }
 
     leaf cbs {
@@ -128,19 +212,17 @@ module mef-profiles {
         range "0..10000000";
       }
       units bytes;
-      default 12;
       description
-        "";
+        "This attribute identifies the Committed Burst Size (CBS) in bytes for one direction of an ETH EVC.";
     }
 
     leaf eir {
       type uint32{
         range "0..10000000";
       }
-      units Kbps;
-      default 0;
+      units Bps;
       description
-        "";
+        "This attribute identifies the Excess Information Rate (EIR) in bits per second for one direction of an ETH EVC.";
     }
     
     leaf ebs {
@@ -149,9 +231,8 @@ module mef-profiles {
       }
       
       units bytes;
-      default 0;
       description
-        "";
+        "This attribute identifies the Excess Burst Size (EBS) in bytes for one direction of an ETH EVC.";
     }
 
     leaf color-mode {
@@ -159,9 +240,8 @@ module mef-profiles {
         enum color-blind;
         enum color-aware;
       }
-      default color-blind;
       description
-        "";
+        "This attribute describes the color mode (CM) to be applied as \"color-blind mode\" or \"color-aware mode\".";
     }
 
     leaf coupling-flag {
@@ -169,17 +249,8 @@ module mef-profiles {
         enum yellow-eir-only;
         enum yellow-eir-plus-cir;
       }
-      default yellow-eir-only;
-    }
+            description "The optional coupling flag (CF) attribute, describes if yellow frames will be admitted if unused bandwidth is available.   When CF is set to \"yellow-eir-only\", the volume of the yellow service frames admitted to the network cannot exceed EIR. When CF is set to \"yellow-eir-plus-cir\", the volume of the yellow service frames admitted to the network is bounded by CIR + EIR depending on volume of the offered green Service Frames. In both cases the burst size of the yellow service frames admitted to the network is bounded by EBS.";
 
-    leaf performance-data-set-enabled {
-      type binary;
-    }
-
-    leaf cos-profile-ref {
-      type leafref {
-        path "/cos-profile/identifier";
-      }
     }
   }
 }

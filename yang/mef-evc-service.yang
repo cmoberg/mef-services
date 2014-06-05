@@ -168,9 +168,15 @@ module mef-evc-service {
 
         }
       }
+            leaf-list performance-group {
+                type leafref {
+                    path "/mef-profiles:performance-profile/mef-profiles:identifier";
+                }
+            }
+
       leaf-list l2cp-group {
         type leafref {
-                    path "/mef-profiles:l2cp-profile/mef-profiles:index";
+                    path "/mef-profiles:l2cp-profile/mef-profiles:identifier";
 
         }
       }
