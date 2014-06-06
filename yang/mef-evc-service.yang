@@ -5,6 +5,9 @@ module mef-evc-service {
   import mef-profiles {
     prefix mef-profiles;
   }
+    import tailf-ncs {
+        prefix ncs;
+    }
     description "This module models a MEF EVC service based on MEF 10.3.";
 
 
@@ -60,23 +63,6 @@ module mef-evc-service {
           A value of 'locked' means the resource is administratively prohibited from use.  A value of 'shuttingDown' means that usage is administratively limited to current instances of use.  A value of 'unlocked' means the resource is not administratively prohibited from use.  A value of 'unknown' means that this resource is unable to report administrative state.";
         reference "ENTITY-STATE-TC-MIB";
     }
-
-  container mef-service {
-
-      leaf service-type {
-        type enumeration {
-          enum epl;
-          enum evpl;
-          enum eplan;
-          enum evplan;
-          enum eptree;
-          enum evptree;
-        }
-        default epl;
-        config false;
-        status current;
-      }
-  }
 
   container mef-service-evc {
 
@@ -155,6 +141,23 @@ module mef-evc-service {
         default unconditional;
       }
 
+      // MUST max 1 if point-to-point
+
+      leaf admin-state {
+	type entity-admin-state-type;
+        default unlocked;
+        status current;
+	description
+	  "";
+      }
+            leaf max-uni-end-points {
+                type uint32;
+            }
+            leaf protected {
+                type boolean;
+            }
+
+
       leaf-list ingress-bwp-group {
 	type leafref {
                     path "/mef-profiles:bandwidth-profile/mef-profiles:identifier";
@@ -181,34 +184,19 @@ module mef-evc-service {
         }
       }
 
-      // MUST max 1 if point-to-point
-
-      leaf admin-state {
-	type entity-admin-state-type;
-        default unlocked;
-        status current;
-	description
-	  "";
-      }
-            leaf eth-flow-point-list-ref {
-                type leafref {
-                    path "/mef-service-evc/eth-flow-point/identifier";
-                }
-            }
-            leaf max-uni-end-points {
-                type uint32;
-            }
-            leaf protected {
-                type boolean;
-            }
-
-    }
-
     list eth-flow-point {
-      key identifier;
-      leaf identifier {
+      key "device interface";
+                leaf device {
+                    type leafref {
+                        path "/ncs:devices/ncs:device/ncs:name";
+                    }
+                }
+
+      leaf interface {
         type string;
         status current;
+                    description "This attribute identifies the name of an ETH_Flow_Point instance. The interface identifier on the device referenced by the 'device' leaf above";
+
       }
 
       leaf type {
@@ -219,7 +207,10 @@ module mef-evc-service {
         }
         default root;
         status current;
+                    description "This attribute indicates whether the flow point is acting as a root or leaf, and takes on the value either \"root\", \"leaf\" or \"unkown\". If the type of EVC is Point-to-Point or Multipoint-to-Multipoint, then the UNI Type is equal to \"root\". If the type of EVC is Rooted-Multipoint, then the UNI type can be either root or leaf.";
+
       }
+    }
     }
   }
 }
