@@ -74,13 +74,17 @@ module mef-evc-service {
           length "0..45";
         }
 	description
-	  "";
+	  "This attribute identifies the name of an ETH_FDFr_EVC instance.";
       }
             leaf label {
                 type string;
+                description "This attribute represents a friendly name for the ETH_FDFr_EVC instance.";
+
             }
             leaf user-label {
                 type string;
+                description "This attribute identifies a text string that may be used to provide additional information about the ETH_FDFr_EVC, such as a circuit identifier.";
+
             }
 
 
@@ -92,16 +96,18 @@ module mef-evc-service {
 
 	}
         default point-to-point;
-        status current;
 	description
-          "";
+          "This attribute describes the ETH FDFr_EVC as either Connection_MultipointToMultipoint, Connection_PointToPoint,
+           Connection_RootedMultipoint.";
       }
 
       leaf max-service-frame-size {
         type uint32 {
           range "1522..16384";
         }
-        status current;
+                units bytes;
+                description "This attribute describes the maximum service frame size for the ETH_FDFr_EVC.";
+
       }
 
       leaf ce-vlan-id-preservation {
@@ -109,9 +115,8 @@ module mef-evc-service {
           enum preserve;
           enum no-preserve;
         }
-        status current;
 	description
-	  "";
+	  "This attribute identifies an EVC where the CE VLAN IDs of egress frames are always identical to the CE VLAN IDs of the corresponding ingress frames.  An EVC with more than one CE-VLAN ID mapping to it MUST have the CE-VLAN ID Preservation Service Attribute and the list of CE-VLAN IDs mapped to the EVC MUST be the same at each UNI in the EVC.";
       }
 
       leaf ce-vlan-cos-preservation {
@@ -119,26 +124,29 @@ module mef-evc-service {
           enum preserve;
           enum no-preserve;
         }
-
-        status current;
 	description
-	  "";
+	  "This attribute identifies an EVC where the CE VLAN CoS user_priority bits of an egress frame is always identical to the CE VLAN CoS user_priority bits of the corresponding ingress frame.";
       }
 
       leaf unicast-delivery {
         type service-frame-delivery-type;
         default unconditional;
-        status current;
+                description "This attribute describes the service frame delivery option for Unicast Service Frames as:  discard, unconditional, or conditional. In the Type definition, the String is to describe the condition for conditional.";
+
       }
 
       leaf multicast-delivery {
         type service-frame-delivery-type;
         default unconditional;
+                description "This attribute describes the service frame delivery option for multicast Service Frames as:  discard, unconditional, or conditional. In the Type definition, the String is to describe the condition for conditional.";
+
       }
 
       leaf broadcast-delivery {
         type service-frame-delivery-type;
         default unconditional;
+                description "This attribute describes the service frame delivery option for broadcast Service Frames as:  discard, unconditional, or conditional. In the Type definition, the String is to describe the condition for conditional.";
+
       }
 
       // MUST max 1 if point-to-point
@@ -146,15 +154,18 @@ module mef-evc-service {
       leaf admin-state {
 	type entity-admin-state-type;
         default unlocked;
-        status current;
 	description
-	  "";
+	  "This attribute denotes the administrative state of the ETH_FDFr_EVC. In the locked state frame flow through the ETH_FDFr_EVC is prohibited. ";
       }
             leaf max-uni-end-points {
                 type uint32;
+                description "This attribute represents the maximum number of UNI end points of the ETH_FDFr_EVC.  For EVC Type of Point-to-Point, this attribute will always be 2.";
+
             }
             leaf protected {
                 type boolean;
+                description "This attribute indicates whether the ETH_FDFr_EVC is protected at the ETH layer.";
+
             }
 
 
@@ -163,6 +174,8 @@ module mef-evc-service {
                     path "/mef-profiles:bandwidth-profile/mef-profiles:identifier";
 
 	}
+                description "This attribute identifies the ingress badwidth profile of an ETH_FDFr_EVC instance.";
+
       }
 
       leaf-list egress-bwp-group {
@@ -170,11 +183,15 @@ module mef-evc-service {
                     path "/mef-profiles:bandwidth-profile/mef-profiles:identifier";
 
         }
+                description "This attribute identifies the egress badwidth profile of an ETH_FDFr_EVC instance.";
+
       }
             leaf-list performance-group {
                 type leafref {
                     path "/mef-profiles:performance-profile/mef-profiles:identifier";
                 }
+                description "This attribute identifies the performance profile of an ETH_FDFr_EVC instance.";
+
             }
 
       leaf-list l2cp-group {
@@ -182,10 +199,15 @@ module mef-evc-service {
                     path "/mef-profiles:l2cp-profile/mef-profiles:identifier";
 
         }
+                description "This attribute identifies the Layer 2 Control Protocol profile of an ETH_FDFr_EVC instance.";
+                reference "MEF 6.1.1";
+
       }
 
     list eth-flow-point {
       key "device interface";
+                description "A list of ETH Flow Points. A Flow Point represents the termination of ETH_FDFr_EVC on an ETH_Flow_Domain.  An instance of a ETH_FDFr_EVC may be used to relate two instances of the ETH_Flow_Point.";
+
                 leaf device {
                     type leafref {
                         path "/ncs:devices/ncs:device/ncs:name";
