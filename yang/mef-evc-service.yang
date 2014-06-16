@@ -1,5 +1,5 @@
 module mef-evc-service {
-  namespace "http://tail-f.com/mef-evc-service";    
+  namespace "http://com/example/mefevcservice";    
   prefix mef-evc-service;
 
   import mef-profiles {
@@ -63,12 +63,13 @@ module mef-evc-service {
           A value of 'locked' means the resource is administratively prohibited from use.  A value of 'shuttingDown' means that usage is administratively limited to current instances of use.  A value of 'unlocked' means the resource is not administratively prohibited from use.  A value of 'unknown' means that this resource is unable to report administrative state.";
         reference "ENTITY-STATE-TC-MIB";
     }
-
+augment /ncs:services {
   container mef-service-evc {
 
     list eth-fdfr-evc {
       key identifier;
-  
+      uses ncs:service-data;
+      ncs:servicepoint "mef-evc-service";
       leaf identifier {
 	type string{
           length "0..45";
@@ -234,5 +235,6 @@ module mef-evc-service {
       }
     }
     }
+  }
   }
 }
